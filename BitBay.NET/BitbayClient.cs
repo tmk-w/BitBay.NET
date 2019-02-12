@@ -26,31 +26,28 @@ namespace BitBay.NET
 
         public async Task<BitBayOrderBook> GetOrderBookAsync(string market)
         {
-            var address = $"{market}/{_orderBookEndpoint}.json";
+            var address = $"{market}/{_orderBookEndpoint}";
 
-            var response = await _httpClient.GetAsync(address);
-            response.EnsureSuccessStatusCode();
-
-            var json = await response.Content.ReadAsStringAsync();
-
-            var responseData = JsonConvert.DeserializeObject<BitBayOrderBook>(json);
-
-            return responseData;
+            return await ExecuteGetRequest<BitBayOrderBook>(address);
         }
 
         public async Task<BitBayTicker> GetTickerAsync(string market)
         {
-            var address = $"{market}/{_tickerEndpoint}.json";
+            var address = $"{market}/{_tickerEndpoint}";
 
-            var response = await _httpClient.GetAsync(address);
+            return await ExecuteGetRequest<BitBayTicker>(address);
+        }
+
+        private async Task<T> ExecuteGetRequest<T>(string endpoint)
+        {
+            var response = await _httpClient.GetAsync($"{endpoint}.json");
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadAsStringAsync();
 
-            var responseData = JsonConvert.DeserializeObject<BitBayTicker>(json);
+            var responseData = JsonConvert.DeserializeObject<T>(json);
 
             return responseData;
         }
-
     }
 }

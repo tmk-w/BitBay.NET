@@ -15,6 +15,7 @@ namespace BitBay.NET
 
         private readonly string _orderBookEndpoint = "orderbook";
         private readonly string _tickerEndpoint = "ticker";
+        private readonly string _tradesEndpoint = "trades";
 
         private readonly HttpClient _httpClient;
 
@@ -22,6 +23,13 @@ namespace BitBay.NET
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(_publicBaseAddress);
+        }
+
+        public async Task<IEnumerable<BitBayTrades>> GetTradesAsync(string market)
+        {
+            var address = $"{market}/{_tradesEndpoint}";
+
+            return await ExecuteGetRequest<IEnumerable<BitBayTrades>>(address);
         }
 
         public async Task<BitBayOrderBook> GetOrderBookAsync(string market)

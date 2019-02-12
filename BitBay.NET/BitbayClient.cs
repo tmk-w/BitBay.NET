@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,12 +13,18 @@ namespace BitBay.NET
     public class BitBayClient
     {
         private readonly string _publicBaseAddress = "https://bitbay.net/API/Public/";
+        private readonly string _privateBaseAddress = "https://bitbay.net/API/Trading/tradingApi.php";
+
+        private readonly string _apiKey;
+        private readonly string _apiSecret;
 
         private readonly string _orderBookEndpoint = "orderbook";
         private readonly string _tickerEndpoint = "ticker";
         private readonly string _tradesEndpoint = "trades";
         private readonly string _marketEndpoint = "market";
         private readonly string _allEndpoint = "all";
+
+        private readonly string _infoEndpoint = "info";
 
         private readonly HttpClient _httpClient;
 
@@ -26,6 +33,67 @@ namespace BitBay.NET
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(_publicBaseAddress);
         }
+
+        public async Task<BitBayInfo> GetInfoAsync(string currency)
+        {
+            var moment = await GetTonce();
+
+            var content = new Dictionary<string, string>()
+            {
+                { "method", "info" },
+                { "moment", moment.ToString() }
+            };
+
+            _httpClient.DefaultRequestHeaders.Add("API-Key", _apiKey);
+            _httpClient.DefaultRequestHeaders.Add("API-Hash", );
+
+            var contentJson = JsonConvert.SerializeObject(content);
+
+            var response = await _httpClient.PostAsync(_privateBaseAddress,
+                new StringContent(contentJson, Encoding.UTF8, "application/json"));
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            var responseData = JsonConvert.DeserializeObject<BitBayInfo>(json);
+
+            return responseData;
+        }
+
+        private string GetSignature(string message, string _apiSecret)
+        {
+            var keyByte = Encoding.UTF8.GetBytes(_apiSecret);
+            using (var hmacsha512 = new HMACSHA512(keyByte))
+            {
+                hmacsha512.ComputeHash(Encoding.UTF8.GetBytes(message));
+                return ByteToString(hmacsha512.Hash);
+            }
+        }
+
+        private string ByteToString(byte[] buff)
+        {
+            string sbinary = "";
+            for (int i = 0; i < buff.Length; i++)
+                sbinary += buff[i].ToString("x2");
+            return sbinary;
+        }
+
+        private async Task<int> GetTonce()
+        {
+            var response = await _httpClient.GetAsync("https://google.com", HttpCompletionOption.ResponseHeadersRead);
+            response.EnsureSuccessStatusCode();
+
+            var date = response.Headers.Date;
+
+            if (date == null)
+            {
+                date = DateTime.UtcNow;
+            }
+
+            return ((Int32)date.Value.UtcDateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+        }
+
+
 
         public async Task<BitBayAll> GetAllAsync(string market)
         {

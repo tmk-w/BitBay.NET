@@ -30,7 +30,8 @@ namespace BitBay.NET
         private readonly string _infoEndpoint = "info";
         private readonly string _tradeEndpoint = "trade";
         private readonly string _cancelEndpoint = "cancel";
-        private readonly string _openOffers = "orderbook";
+        private readonly string _marketOrders = "orderbook";
+        private readonly string _openOrders = "orders";
 
         private readonly HttpClient _httpClient;
 
@@ -43,6 +44,11 @@ namespace BitBay.NET
         }
 
         #region Private methods
+
+        public async Task<IEnumerable<BitBayOpenOrderDetails>> GetOpenOrdersAsync()
+        {
+            return await ExecutePostAsync<IEnumerable<BitBayOpenOrderDetails>>(_openOrders);
+        }
 
         public async Task<BitBayInfo> GetInfoAsync()
         {
@@ -73,7 +79,7 @@ namespace BitBay.NET
             return await ExecutePostAsync<BitBayCancel>(_cancelEndpoint, content);
         }
 
-        public async Task<BitBayOpenOffers> GetOpenOffers(string currency, string paymentCurrency)
+        public async Task<BitBayMarketOrders> GetMarketOrdersAsync(string currency, string paymentCurrency)
         {
             var content = new Dictionary<string, string>()
             {
@@ -81,7 +87,7 @@ namespace BitBay.NET
                 { "payment_currency", paymentCurrency },
             };
 
-            return await ExecutePostAsync<BitBayOpenOffers>(_openOffers, content);
+            return await ExecutePostAsync<BitBayMarketOrders>(_marketOrders, content);
         }
 
         #endregion

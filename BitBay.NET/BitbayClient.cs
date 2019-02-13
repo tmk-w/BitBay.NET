@@ -40,7 +40,7 @@ namespace BitBay.NET
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(_publicBaseAddress);
-            _apiKey = configuration.ApiKey = configuration.ApiKey;
+            _apiKey = configuration.ApiKey;
             _apiSecret = configuration.ApiSecret;
         }
 

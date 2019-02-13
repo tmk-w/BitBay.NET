@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -27,6 +28,8 @@ namespace BitBay.NET
         private readonly string _allEndpoint = "all";
 
         private readonly string _infoEndpoint = "info";
+        private readonly string _tradeEndpoint = "trade";
+        private readonly string _cancelEndpoint = "cancel";
 
         private readonly HttpClient _httpClient;
 
@@ -38,11 +41,41 @@ namespace BitBay.NET
             _apiSecret = configuration.ApiSecret;
         }
 
+        #region Private methods
+
         public async Task<BitBayInfo> GetInfoAsync()
         {
             return await ExecutePostAsync<BitBayInfo>(_infoEndpoint);
         }
-           
+
+        public async Task<BitBayTrade> TradeAsync(string type, string currency, double amount, string paymentCurrency, double rate)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "currency", currency },
+                { "payment_currency", paymentCurrency },
+                { "type", type },
+                { "amount", amount.ToString(CultureInfo.InvariantCulture) },
+                { "rate", rate.ToString(CultureInfo.InvariantCulture) },
+            };
+
+            return await ExecutePostAsync<BitBayTrade>(_tradeEndpoint, content);
+        }
+
+        public async Task<BitBayCancel> CancelAsync(string orderId)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "id", orderId },
+            };
+
+            return await ExecutePostAsync<BitBayCancel>(_cancelEndpoint, content);
+        }
+
+        #endregion
+
+        #region Public methods
+
         public async Task<BitBayAll> GetAllAsync(string market)
         {
             var address = $"{market}/{_allEndpoint}";
@@ -78,6 +111,8 @@ namespace BitBay.NET
             return await ExecuteGetRequest<BitBayTicker>(address);
         }
 
+        #endregion
+
         private async Task<T> ExecuteGetRequest<T>(string endpoint)
         {
             var response = await _httpClient.GetAsync($"{endpoint}.json");
@@ -90,7 +125,7 @@ namespace BitBay.NET
             return responseData;
         }
 
-        private async Task<T> ExecutePostAsync<T>(string method)
+        private async Task<T> ExecutePostAsync<T>(string method, IDictionary<string, string> parameters = null)
         {
             var moment = await GetTonce();
 
@@ -100,13 +135,27 @@ namespace BitBay.NET
                 {"moment", moment.ToString()}
             };
 
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    content.Add(parameter.Key, parameter.Value);
+                }
+            }
+
             var queryParams = content
                 .ToNameValueCollection()
                 .ToQueryString();
 
             var signature = GetSignature(queryParams, _apiSecret);
 
-            _httpClient.DefaultRequestHeaders.Add("API-Key", _apiKey);
+            if (!_httpClient.DefaultRequestHeaders.Contains("API-Key"))
+            {
+                _httpClient.DefaultRequestHeaders.Add("API-Key", _apiKey);
+            }
+
+            _httpClient.DefaultRequestHeaders.Remove("API-Hash");
+
             _httpClient.DefaultRequestHeaders.Add("API-Hash", signature);
 
             var response = await _httpClient.PostAsync(_privateBaseAddress,

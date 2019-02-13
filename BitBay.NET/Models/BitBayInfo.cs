@@ -6,7 +6,7 @@ namespace BitBay.NET.Models
 {
     public class BitBayInfo
     {
-        public int Success { get; set; }
+        public bool Success { get; set; }
         public double Fee { get; set; }
         public BitBayBalancesInfo Balances { get; set; }
         public BitBayAddressInfo Addresses { get; set; }

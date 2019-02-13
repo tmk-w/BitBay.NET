@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
@@ -122,6 +123,8 @@ namespace BitBay.NET
             return await ExecuteGetRequest<BitBayTicker>(address);
         }
 
+        #endregion
+
         private async Task<T> ExecuteGetRequest<T>(string endpoint)
         {
             var response = await _httpClient.GetAsync($"{endpoint}.json");
@@ -134,7 +137,7 @@ namespace BitBay.NET
             return responseData;
         }
 
-        private async Task<T> ExecutePostAsync<T>(string method)
+        private async Task<T> ExecutePostAsync<T>(string method, IDictionary<string, string> parameters = null)
         {
             var moment = await GetTonce();
 
@@ -144,13 +147,27 @@ namespace BitBay.NET
                 {"moment", moment.ToString()}
             };
 
+            if (parameters != null)
+            {
+                foreach (var parameter in parameters)
+                {
+                    content.Add(parameter.Key, parameter.Value);
+                }
+            }
+
             var queryParams = content
                 .ToNameValueCollection()
                 .ToQueryString();
 
             var signature = GetSignature(queryParams, _apiSecret);
 
-            _httpClient.DefaultRequestHeaders.Add("API-Key", _apiKey);
+            if (!_httpClient.DefaultRequestHeaders.Contains("API-Key"))
+            {
+                _httpClient.DefaultRequestHeaders.Add("API-Key", _apiKey);
+            }
+
+            _httpClient.DefaultRequestHeaders.Remove("API-Hash");
+
             _httpClient.DefaultRequestHeaders.Add("API-Hash", signature);
 
             var response = await _httpClient.PostAsync(_privateBaseAddress,

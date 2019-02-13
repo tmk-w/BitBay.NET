@@ -6,7 +6,7 @@ namespace BitBay.NET.Models
 {
     public class BitBayCurrencyInfo
     {
-        public string available { get; set; }
-        public string locked { get; set; }
+        public string Available { get; set; }
+        public string Locked { get; set; }
     }
 }

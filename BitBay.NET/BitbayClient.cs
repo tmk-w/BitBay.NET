@@ -30,8 +30,9 @@ namespace BitBay.NET
         private readonly string _infoEndpoint = "info";
         private readonly string _tradeEndpoint = "trade";
         private readonly string _cancelEndpoint = "cancel";
-        private readonly string _marketOrders = "orderbook";
-        private readonly string _openOrders = "orders";
+        private readonly string _marketOrdersEndpoint = "orderbook";
+        private readonly string _openOrdersEndpoint = "orders";
+        private readonly string _transactionsEndpoint = "transactions";
 
         private readonly HttpClient _httpClient;
 
@@ -45,9 +46,14 @@ namespace BitBay.NET
 
         #region Private methods
 
+        public async Task<IEnumerable<BitBayTransactionDetails>> GetTransactionsAsync()
+        {
+            return await ExecutePostAsync<IEnumerable<BitBayTransactionDetails>>(_transactionsEndpoint);
+        }
+
         public async Task<IEnumerable<BitBayOpenOrderDetails>> GetOpenOrdersAsync()
         {
-            return await ExecutePostAsync<IEnumerable<BitBayOpenOrderDetails>>(_openOrders);
+            return await ExecutePostAsync<IEnumerable<BitBayOpenOrderDetails>>(_openOrdersEndpoint);
         }
 
         public async Task<BitBayInfo> GetInfoAsync()
@@ -87,7 +93,7 @@ namespace BitBay.NET
                 { "payment_currency", paymentCurrency },
             };
 
-            return await ExecutePostAsync<BitBayMarketOrders>(_marketOrders, content);
+            return await ExecutePostAsync<BitBayMarketOrders>(_marketOrdersEndpoint, content);
         }
 
         #endregion

@@ -33,6 +33,7 @@ namespace BitBay.NET
         private readonly string _marketOrdersEndpoint = "orderbook";
         private readonly string _openOrdersEndpoint = "orders";
         private readonly string _transactionsEndpoint = "transactions";
+        private readonly string _historyEndpoint = "history";
 
         private readonly HttpClient _httpClient;
 
@@ -45,6 +46,17 @@ namespace BitBay.NET
         }
 
         #region Private methods
+
+        public async Task<IEnumerable<BitBayHistory>> GetHistoryAsync(string currency, int limit)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "currency", currency },
+                { "limit", limit.ToString() }
+            };
+
+            return await ExecutePostAsync<IEnumerable<BitBayHistory>>(_historyEndpoint, content);
+        }
 
         public async Task<IEnumerable<BitBayTransactionDetails>> GetTransactionsAsync()
         {

@@ -1,7 +1,15 @@
 # BitBay.NET
-.NET Standard 2.0 API wrapper for the BitBay cryptocurrency exchange
+.NET Standard 2.0 REST API wrapper for the BitBay cryptocurrency exchange
 
 package - https://www.nuget.org/packages/BitBay.NET/
+
+## Installation
+
+Package is available in nuget repository
+
+```code
+Install-Package BitBay.NET
+```
 
 ## Usage
 
@@ -18,3 +26,4 @@ var info = await client.GetInfoAsync();
 ...
 
 ```
+

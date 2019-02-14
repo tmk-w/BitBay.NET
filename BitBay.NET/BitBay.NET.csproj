@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Tomasz Wnuk</Authors>
+    <Company>HARDCODED Tomasz Wnuk</Company>
+    <PackageTags>bitbay api dotnet csharp api-wrapper wrapper cryptocurrency exchange</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryUrl>https://github.com/tmk-w/BitBay.NET</RepositoryUrl>
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.1.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

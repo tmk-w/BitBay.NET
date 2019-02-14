@@ -34,6 +34,8 @@ namespace BitBay.NET
         private readonly string _openOrdersEndpoint = "orders";
         private readonly string _transactionsEndpoint = "transactions";
         private readonly string _historyEndpoint = "history";
+        private readonly string _withdrawEndpoint = "withdraw";
+        private readonly string _transferEndpoint = "transfer";
 
         private readonly HttpClient _httpClient;
 
@@ -46,6 +48,33 @@ namespace BitBay.NET
         }
 
         #region Private methods
+
+        public async Task<BitBayTransfer> TransferAsync(string currency, double quantity, string address)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "currency", currency },
+                { "quantity", quantity.ToString(CultureInfo.InvariantCulture) },
+                { "address", address }
+            };
+
+            return await ExecutePostAsync<BitBayTransfer>(_transferEndpoint, content);
+        }
+
+        public async Task<BitBayWithdraw> WithdrawAsync(string currency, double quantity, string accountNumber,
+            bool express, string bicNumber)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "currency", currency },
+                { "quantity", quantity.ToString(CultureInfo.InvariantCulture) },
+                { "accountNumber", accountNumber },
+                { "express", express.ToString() },
+                { "bic", bicNumber }
+            };
+
+            return await ExecutePostAsync<BitBayWithdraw>(_withdrawEndpoint, content);
+        }
 
         public async Task<IEnumerable<BitBayHistory>> GetHistoryAsync(string currency, int limit)
         {

@@ -49,6 +49,9 @@ namespace BitBay.NET
 
         #region Private methods
 
+        public BitBayTransfer Transfer(string currency, double quantity, string address) =>
+            TransferAsync(currency, quantity, address).Result;
+
         public async Task<BitBayTransfer> TransferAsync(string currency, double quantity, string address)
         {
             var content = new Dictionary<string, string>()
@@ -60,6 +63,9 @@ namespace BitBay.NET
 
             return await ExecutePostAsync<BitBayTransfer>(_transferEndpoint, content);
         }
+
+        public BitBayWithdraw Withdraw(string currency, double quantity, string accountNumber, bool express,
+            string bicNumber) => WithdrawAsync(currency, quantity, accountNumber, express, bicNumber).Result;
 
         public async Task<BitBayWithdraw> WithdrawAsync(string currency, double quantity, string accountNumber,
             bool express, string bicNumber)
@@ -76,6 +82,9 @@ namespace BitBay.NET
             return await ExecutePostAsync<BitBayWithdraw>(_withdrawEndpoint, content);
         }
 
+        public IEnumerable<BitBayHistory> GetHistory(string currency, int limit) =>
+            GetHistoryAsync(currency, limit).Result;
+
         public async Task<IEnumerable<BitBayHistory>> GetHistoryAsync(string currency, int limit)
         {
             var content = new Dictionary<string, string>()
@@ -87,20 +96,29 @@ namespace BitBay.NET
             return await ExecutePostAsync<IEnumerable<BitBayHistory>>(_historyEndpoint, content);
         }
 
+        public IEnumerable<BitBayTransactionDetails> GetTransactions() => GetTransactionsAsync().Result;
+
         public async Task<IEnumerable<BitBayTransactionDetails>> GetTransactionsAsync()
         {
             return await ExecutePostAsync<IEnumerable<BitBayTransactionDetails>>(_transactionsEndpoint);
         }
+
+        public IEnumerable<BitBayOpenOrderDetails> GetOpenOrders() => GetOpenOrdersAsync().Result;
 
         public async Task<IEnumerable<BitBayOpenOrderDetails>> GetOpenOrdersAsync()
         {
             return await ExecutePostAsync<IEnumerable<BitBayOpenOrderDetails>>(_openOrdersEndpoint);
         }
 
+        public BitBayInfo GetInfo() => GetInfoAsync().Result;
+
         public async Task<BitBayInfo> GetInfoAsync()
         {
             return await ExecutePostAsync<BitBayInfo>(_infoEndpoint);
         }
+
+        public BitBayTrade Trade(string type, string currency, double amount, string paymentCurrency, double rate) =>
+            TradeAsync(type, currency, amount, paymentCurrency, rate).Result;
 
         public async Task<BitBayTrade> TradeAsync(string type, string currency, double amount, string paymentCurrency, double rate)
         {
@@ -116,6 +134,8 @@ namespace BitBay.NET
             return await ExecutePostAsync<BitBayTrade>(_tradeEndpoint, content);
         }
 
+        public BitBayCancel Cancel(string orderId) => CancelAsync(orderId).Result;
+
         public async Task<BitBayCancel> CancelAsync(string orderId)
         {
             var content = new Dictionary<string, string>()
@@ -125,6 +145,9 @@ namespace BitBay.NET
 
             return await ExecutePostAsync<BitBayCancel>(_cancelEndpoint, content);
         }
+
+        public BitBayMarketOrders GetMarketOrders(string currency, string paymentCurrency) =>
+            GetMarketOrdersAsync(currency, paymentCurrency).Result;
 
         public async Task<BitBayMarketOrders> GetMarketOrdersAsync(string currency, string paymentCurrency)
         {
@@ -141,12 +164,16 @@ namespace BitBay.NET
 
         #region Public methods
 
+        public BitBayAll GetAll(string market) => GetAllAsync(market).Result;
+
         public async Task<BitBayAll> GetAllAsync(string market)
         {
             var address = $"{market}/{_allEndpoint}";
 
             return await ExecuteGetRequest<BitBayAll>(address);
         }
+
+        public BitBayMarket GetMarket(string market) => GetMarketAsync(market).Result;
 
         public async Task<BitBayMarket> GetMarketAsync(string market)
         {
@@ -155,6 +182,8 @@ namespace BitBay.NET
             return await ExecuteGetRequest<BitBayMarket>(address);
         }
 
+        public IEnumerable<BitBayTrades> GetTrades(string market) => GetTradesAsync(market).Result;
+
         public async Task<IEnumerable<BitBayTrades>> GetTradesAsync(string market)
         {
             var address = $"{market}/{_tradesEndpoint}";
@@ -162,12 +191,16 @@ namespace BitBay.NET
             return await ExecuteGetRequest<IEnumerable<BitBayTrades>>(address);
         }
 
+        public BitBayOrderBook GetOrderBook(string market) => GetOrderBookAsync(market).Result;
+
         public async Task<BitBayOrderBook> GetOrderBookAsync(string market)
         {
             var address = $"{market}/{_orderBookEndpoint}";
 
             return await ExecuteGetRequest<BitBayOrderBook>(address);
         }
+
+        public BitBayTicker GetTicker(string market) => GetTickerAsync(market).Result;
 
         public async Task<BitBayTicker> GetTickerAsync(string market)
         {

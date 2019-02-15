@@ -7,9 +7,13 @@
     <PackageTags>bitbay api dotnet csharp api-wrapper wrapper cryptocurrency exchange</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <RepositoryUrl>https://github.com/tmk-w/BitBay.NET</RepositoryUrl>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.0.1</AssemblyVersion>
-    <FileVersion>1.0.1.1</FileVersion>
+    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.0.2</AssemblyVersion>
+    <FileVersion>1.0.1.2</FileVersion>
+    <PackageReleaseNotes>Added endpoints:
+- withdrawal
+- transfer
+- history</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

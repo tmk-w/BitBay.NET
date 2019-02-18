@@ -27,3 +27,9 @@ var info = await client.GetInfoAsync();
 
 ```
 
+## Release notes
+
+### 1.0.4
+
+- Removed unnecessary google.com call in GetTonce method
+- Added optional parameters to all async and sync methods

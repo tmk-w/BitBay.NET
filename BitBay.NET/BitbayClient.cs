@@ -39,12 +39,15 @@ namespace BitBay.NET
 
         private readonly HttpClient _httpClient;
 
+        private double _timeOffset;
+
         public BitBayClient(ClientConfiguration configuration)
         {
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri(_publicBaseAddress);
             _apiKey = configuration.ApiKey;
             _apiSecret = configuration.ApiSecret;
+            _timeOffset = configuration.TimeOffset;
         }
 
         #region Private methods
@@ -261,7 +264,7 @@ namespace BitBay.NET
 
         private async Task<T> ExecutePostAsync<T>(string method, IDictionary<string, string> parameters = null)
         {
-            var moment = await GetTonce();
+            var moment = GetTimestamp();
 
             var content = new Dictionary<string, string>()
             {
@@ -321,19 +324,14 @@ namespace BitBay.NET
             return sbinary;
         }
 
-        private async Task<int> GetTonce()
+        private long ToUnixTimestamp(DateTime time)
         {
-            var response = await _httpClient.GetAsync("https://google.com", HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
+            return (long)(time - new DateTime(1970, 1, 1)).TotalSeconds;
+        }
 
-            var date = response.Headers.Date;
-
-            if (date == null)
-            {
-                date = DateTime.UtcNow;
-            }
-
-            return ((Int32)date.Value.UtcDateTime.Subtract(new DateTime(1970, 1, 1)).TotalSeconds);
+        private string GetTimestamp()
+        {
+            return ToUnixTimestamp(DateTime.UtcNow.AddSeconds(_timeOffset)).ToString();
         }
     }
 }

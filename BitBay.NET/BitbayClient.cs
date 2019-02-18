@@ -117,6 +117,18 @@ namespace BitBay.NET
             return await ExecutePostAsync<BitBayInfo>(_infoEndpoint);
         }
 
+        public BitBayInfo GetInfo(string currency) => GetInfoAsync(currency).Result;
+
+        public async Task<BitBayInfo> GetInfoAsync(string currency)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "currency", currency }
+            };
+
+            return await ExecutePostAsync<BitBayInfo>(_infoEndpoint, content);
+        }
+
         public BitBayTrade Trade(string type, string currency, double amount, string paymentCurrency, double rate) =>
             TradeAsync(type, currency, amount, paymentCurrency, rate).Result;
 

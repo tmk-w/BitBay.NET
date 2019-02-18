@@ -103,6 +103,18 @@ namespace BitBay.NET
             return await ExecutePostAsync<IEnumerable<BitBayTransactionDetails>>(_transactionsEndpoint);
         }
 
+        public IEnumerable<BitBayTransactionDetails> GetTransactions(string market) => GetTransactionsAsync(market).Result;
+
+        public async Task<IEnumerable<BitBayTransactionDetails>> GetTransactionsAsync(string market)
+        {
+            var content = new Dictionary<string, string>()
+            {
+                { "market", market }
+            };
+
+            return await ExecutePostAsync<IEnumerable<BitBayTransactionDetails>>(_transactionsEndpoint, content);
+        }
+
         public IEnumerable<BitBayOpenOrderDetails> GetOpenOrders() => GetOpenOrdersAsync().Result;
 
         public async Task<IEnumerable<BitBayOpenOrderDetails>> GetOpenOrdersAsync()
